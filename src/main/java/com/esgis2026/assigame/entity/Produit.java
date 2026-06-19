@@ -13,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,6 +22,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Table(name = "produit")
+
 
 public class Produit {
     
@@ -46,7 +48,10 @@ public class Produit {
     
     @Column(unique = false, nullable = false)
     private String statut;
-
+    @PrePersist
+    public void prePersist() {
+        this.date_ajout = LocalDateTime.now();
+    }
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idcategorie_produit", nullable = false)
     private CategorieProduit categorieProduit;
@@ -54,7 +59,7 @@ public class Produit {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_utilisateur", nullable = false)
     private Utilisateur utilisateur;
-
+    
     @Override
     public int hashCode() {
         final int prime = 31;
