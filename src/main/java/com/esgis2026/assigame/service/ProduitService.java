@@ -4,15 +4,20 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.esgis2026.assigame.entity.CategorieProduit;
 import com.esgis2026.assigame.entity.Produit;
+import com.esgis2026.assigame.repository.CategorieProduitRepository;
 import com.esgis2026.assigame.repository.ProduitRepository;
 
 @Service
 public class ProduitService {
     final ProduitRepository produitRepository;
+    final CategorieProduitRepository categorieProduitRepository;
 
-    public ProduitService(ProduitRepository produitRepository ){
-        this.produitRepository = produitRepository; 
+    public ProduitService(ProduitRepository produitRepository,
+                          CategorieProduitRepository categorieProduitRepository){
+        this.produitRepository = produitRepository;
+        this.categorieProduitRepository = categorieProduitRepository;
     }
 
     public List<Produit> getAllProduit(){
@@ -31,15 +36,32 @@ public class ProduitService {
         Produit produit = produitRepository.findById(idProduit)
          .orElseThrow(() -> 
                  new RuntimeException("Produit not found with id " + idProduit));
-    produit.setNom_produit(details.getNom_produit());
-    produit.setDescription(details.getDescription());
-    produit.setPrix(details.getPrix());
 
-    return produitRepository.save(produit);
+        produit.setNom_produit(details.getNom_produit());
+        produit.setDescription(details.getDescription());
+        produit.setPrix(details.getPrix());
 
+        if (details.getImage() != null) {
+            produit.setImage(details.getImage());
+        }
+
+        if (details.getStatut() != null) {
+            produit.setStatut(details.getStatut());
+        }
+
+        if (details.getCategorieProduit() != null
+                && details.getCategorieProduit().getIdcategorie_produit() != null) {
+            CategorieProduit categorie = categorieProduitRepository
+                    .findById(details.getCategorieProduit().getIdcategorie_produit())
+                    .orElseThrow(() -> new RuntimeException("CategorieProduit not found"));
+            produit.setCategorieProduit(categorie);
+        }
+
+        // Le vendeur (utilisateur) n'est volontairement jamais modifié ici :
+        // il reste celui qui a créé le produit, même si l'admin l'édite.
+
+        return produitRepository.save(produit);
     }
-    
-
-    
 
 }
+

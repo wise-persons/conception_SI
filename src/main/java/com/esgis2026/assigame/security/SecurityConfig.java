@@ -46,6 +46,8 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
                 .requestMatchers("/api/categorieproduit/**").permitAll()
                 .requestMatchers("/api/produit/**").permitAll()
                 .requestMatchers("/api/panier/**").permitAll()
+                .requestMatchers("/api/upload/**").permitAll()
+                .requestMatchers("/uploads/**").permitAll()
                 .anyRequest().authenticated()
         )
         .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
